@@ -7,17 +7,25 @@
 ## if working using a large matrix repeatedly.
 
 ## makeCacheMatrix creates a special "matrix" object that can cache its inverse.
+## it also stores functions used in second function (set, get, setinv, getinv)
+## so the functions can be used by cacheSolve.
 
 makeCacheMatrix <- function(x = matrix()) {
         ## setting m(cache) to NULL 
       m <- NULL
+        ## set can be used for changing matrix stored in main function
+        ## not necessary used if do not want to change the matrix
       set <- function(y) {
             x <<- y
             m <<- NULL
       }
+        ## get the matrix from the input
       get <- function() x
+        ## save the value of the input to m
       setinv <- function(solve) m <<- solve
+        ## get data stored in m
       getinv <- function() m
+        ## save the function as a list
       list(set = set, get = get,
            setinv = setinv,
            getinv = getinv)
@@ -30,16 +38,18 @@ makeCacheMatrix <- function(x = matrix()) {
 
 cacheSolve <- function(x, ...) {
         ## Return a matrix that is the inverse of 'x'
+        ## getting data stored in m
       m <- x$getinv()
         ## If m is not null (inversed matrix has been saved to cache) it will
-        ## print the message and print the inversed matrix
+        ## print the message and print the inverted matrix
       if(!is.null(m)) {
             message("getting cached data")
             return(m)
       }
         ## else (no data stored in m) it will get the data from the matrix
-        ## and use solve function to the matrix saved by makeCacheMatrix
-        ## and print the inverted matrix
+        ## then use solve function to the matrix saved by makeCacheMatrix.
+        ## saving the inverted matrix to m, save it to cache using x$setinv(m)
+        ## and print m (the inverted matrix)
       data <- x$get()
       m <- solve(data, ...)
       x$setinv(m)
